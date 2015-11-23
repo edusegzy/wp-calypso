@@ -20,7 +20,8 @@ import SimpleNotice from 'notices/simple-notice';
 const CancelPrivateRegistration = React.createClass( {
 	getInitialState() {
 		return {
-			disabled: false
+			disabled: false,
+			cancelling: false
 		};
 	},
 
@@ -30,14 +31,22 @@ const CancelPrivateRegistration = React.createClass( {
 		page( paths.managePurchase( domain, id ) );
 	},
 
-	cancel() {
+	cancel( event ) {
+		event.preventDefault();
+		event.target.blur();
+
 		const { domain, id } = this.props.selectedPurchase.data;
 
 		this.setState( {
-			disabled: true
+			disabled: true,
+			cancelling: true
 		} );
 
 		cancelPrivateRegistration( id, canceledSuccessfully => {
+			this.setState( {
+				cancelling: false,
+				disabled: false
+			} );
 			if ( canceledSuccessfully ) {
 				page( paths.managePurchaseDestination( domain, id, 'canceled-private-registration' ) );
 			}
@@ -88,7 +97,10 @@ const CancelPrivateRegistration = React.createClass( {
 				onClick={ this.cancel }
 				className="cancel-private-registration__cancel-button"
 				disabled={ this.state.disabled }>
-				{ this.translate( 'Cancel Private Registration' ) }
+				{
+					this.state.cancelling
+						? this.translate( 'Processing…' )
+						: this.translate( 'Cancel Private Registration' ) }
 			</Button>
 		);
 	},
