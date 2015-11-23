@@ -41,6 +41,10 @@ const CancelPrivateRegistration = React.createClass( {
 			if ( success ) {
 				page( paths.managePurchaseDestination( domain, id, 'canceled-private-registration' ) );
 			}
+
+			this.setState( {
+				disabled: false
+			} );
 		} );
 	},
 
